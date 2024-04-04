@@ -4,7 +4,64 @@
 #include <stdlib.h>
 #include <time.h>
 
-// #include "globals.h"
+#define COLOR_BACKGROUND 0x0000 /* Black, or transparent */
+#define COLOR_HAIR 0x7C1F       /* Brown hair */
+#define COLOR_SKIN 0xFEA0       /* Skin tone */
+#define COLOR_SHIRT 0x03BF      /* Blue shirt */
+#define COLOR_PANTS 0x001F      /* Dark blue pants */
+
+unsigned int character[15][15] = {
+    // Top rows (mostly hair)
+    {COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_HAIR,
+     COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR,
+     COLOR_HAIR, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND,
+     COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR,
+     COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR,
+     COLOR_HAIR, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_HAIR, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN,
+     COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_HAIR, COLOR_SKIN, COLOR_SKIN,
+     COLOR_SKIN, COLOR_HAIR, COLOR_BACKGROUND, COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_HAIR, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN,
+     COLOR_SKIN, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN,
+     COLOR_SKIN, COLOR_HAIR, COLOR_BACKGROUND, COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN,
+     COLOR_SKIN, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN, COLOR_SKIN,
+     COLOR_SKIN, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND},
+
+    // Shirt and arms
+    {COLOR_BACKGROUND, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SKIN,
+     COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT,
+     COLOR_SKIN, COLOR_SHIRT, COLOR_SHIRT, COLOR_BACKGROUND, COLOR_BACKGROUND},
+    {COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT,
+     COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT,
+     COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_BACKGROUND},
+    {COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT,
+     COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT,
+     COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT},
+    {COLOR_BACKGROUND, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT,
+     COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT,
+     COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_SHIRT, COLOR_BACKGROUND},
+
+    // Pants and legs
+    {COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS,
+     COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS,
+     COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS,
+     COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS,
+     COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS, COLOR_BACKGROUND,
+     COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS,
+     COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS,
+     COLOR_BACKGROUND, COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS, COLOR_BACKGROUND,
+     COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS, COLOR_PANTS,
+     COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_PANTS, COLOR_PANTS,
+     COLOR_BACKGROUND, COLOR_BACKGROUND},
+    {COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND,
+     COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND,
+     COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND,
+     COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND}};
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -31,19 +88,14 @@ void setup_timer();
 void delay_1sec();
 void fill_screen_with_color(short int color);
 void move_player(uint8_t scan_code, int *x, int *y);
-void draw_player1(int x, int y, int color);
+void draw_player1(int x, int y);
+void draw_character(int top_left_x, int top_left_y, unsigned int color);
 
 short int Buffer1[BUFFER_HEIGHT][BUFFER_WIDTH];  // Declared buffer
 volatile int pixel_buffer_start;  // Global variable for the pixel buffer
 
-struct Maze {
-  int x;
-  int y;
-  int color;
-};
-
 // Digit to 7-segment encoding for common anode HEX display
-uint32_t digit_to_segment[10] = {
+int digit_to_segment[10] = {
     0x3F,  // 0
     0x06,  // 1
     0x5B,  // 2
@@ -63,8 +115,8 @@ int main(void) {
   int buffer = 0;               // Start with Buffer1
   unsigned long last_time = 0;  // Last time we updated the countdown
 
-  setup_timer();         // Initialize the timer for countdown
-  uint32_t counter = 9;  // Start counting from 9
+  setup_timer();          // Initialize the timer for countdown
+  uint32_t counter = 30;  // Start counting from 9
 
   int PS2_data, RVALID;
   char byte3 = 0;
@@ -108,12 +160,13 @@ int main(void) {
       move_player(byte3, &x, &y);  // This updates the current position
 
       // Erase the box from two frames ago
-      draw_player1(x_old, y_old,
-                   0x0000);  // Assuming draw_box(x, y, color) erases
-                             // by drawing with background color
+      draw_character(
+          x_old, y_old,
+          COLOR_BACKGROUND);  // Erases by drawing with background color
 
       // Draw the box in its new position
-      draw_player1(x, y, 0xffff);
+      draw_character(x, y,
+                     0xFFFF);  // draws the character with its appropriate color
 
       // Update positions for the next frame
       x_old = x_prev;
@@ -202,13 +255,13 @@ void wait_for_vsync() {
 void check_and_correct_boundaries(int *x, int *y) {
   if (*x < 0) {
     *x = 0;
-  } else if (*x >= SCREEN_WIDTH) {
+  } else if (*x + 15 >= SCREEN_WIDTH) {
     *x = SCREEN_WIDTH - 1;
   }
 
   if (*y < 0) {
     *y = 0;
-  } else if (*y >= SCREEN_HEIGHT) {
+  } else if (*y + 15 >= SCREEN_HEIGHT) {
     *y = SCREEN_HEIGHT - 1;
   }
 }
@@ -227,14 +280,23 @@ void move_player(uint8_t scan_code, int *x, int *y) {
   check_and_correct_boundaries(x, y);
 }
 
-void draw_player1(int x, int y, int color) {
-  plot_pixel(x, y, color);  // Draw the dot in white
-  plot_pixel(x + 1, y, color);
-  plot_pixel(x, y + 1, color);
-  plot_pixel(x + 1, y + 1, color);
-  plot_pixel(x - 1, y, color);
-  plot_pixel(x, y - 1, color);
-  plot_pixel(x - 1, y - 1, color);
-  plot_pixel(x + 1, y - 1, color);
-  plot_pixel(x - 1, y + 1, color);
+// void draw_character(int top_left_x, int top_left_y, int color) {
+//   for (int y = 0; y < 15; ++y) {
+//     for (int x = 0; x < 15; ++x) {
+//       plot_pixel(top_left_x + x, top_left_y + y, character[y][x]);
+//     }
+//   }
+// }
+
+void draw_character(int top_left_x, int top_left_y, unsigned int color) {
+  // If the color is background, we're erasing the character
+  bool erase = (color == COLOR_BACKGROUND);
+
+  for (int y = 0; y < 15; ++y) {
+    for (int x = 0; x < 15; ++x) {
+      // Draw or erase depending on the color
+      unsigned int draw_color = erase ? COLOR_BACKGROUND : character[y][x];
+      plot_pixel(top_left_x + x, top_left_y + y, draw_color);
+    }
+  }
 }
