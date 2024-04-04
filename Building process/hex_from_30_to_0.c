@@ -77,6 +77,8 @@ unsigned int character[15][15] = {
 volatile int pixel_buffer_start;  // global variable
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
+uint32_t last_displayed_number =
+    -1;  // Initialize to an invalid number to ensure update on first loop
 
 // Function prototypes
 void clear_screen();
@@ -89,7 +91,7 @@ void fill_screen_with_color(short int color);
 void move_player(uint8_t scan_code, int *x, int *y);
 void draw_player1(int x, int y);
 void draw_character(int top_left_x, int top_left_y, unsigned int color);
-void display_hex();
+void display_hex(uint32_t number);
 
 short int Buffer1[BUFFER_HEIGHT][BUFFER_WIDTH];  // Declared buffer
 volatile int pixel_buffer_start;  // Global variable for the pixel buffer
@@ -302,12 +304,18 @@ void draw_character(int top_left_x, int top_left_y, unsigned int color) {
 }
 
 void display_hex(uint32_t number) {
-  uint32_t tens = number / 10;  // Get the tens digit
-  uint32_t ones = number % 10;  // Get the ones digit
+  if (last_displayed_number != number) {
+    uint32_t tens = number / 10;  // Get the tens digit
+    uint32_t ones = number % 10;  // Get the ones digit
 
-  // Set the tens digit on HEX1
-  *HEX_BASE = digit_to_segment[tens] + 7;
+    // Combine the segments for HEX1 and HEX0
+    uint32_t combined_segments =
+        (digit_to_segment[tens] << 8) | digit_to_segment[ones];
 
-  // Set the ones digit on HEX0
-  *HEX_BASE = digit_to_segment[ones];
+    // Update the HEX display only if the number has changed
+    *HEX_BASE = combined_segments;
+
+    // Remember the last displayed number
+    last_displayed_number = number;
+  }
 }
