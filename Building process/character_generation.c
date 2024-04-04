@@ -280,14 +280,6 @@ void move_player(uint8_t scan_code, int *x, int *y) {
   check_and_correct_boundaries(x, y);
 }
 
-// void draw_character(int top_left_x, int top_left_y, int color) {
-//   for (int y = 0; y < 15; ++y) {
-//     for (int x = 0; x < 15; ++x) {
-//       plot_pixel(top_left_x + x, top_left_y + y, character[y][x]);
-//     }
-//   }
-// }
-
 void draw_character(int top_left_x, int top_left_y, unsigned int color) {
   // If the color is background, we're erasing the character
   bool erase = (color == COLOR_BACKGROUND);
