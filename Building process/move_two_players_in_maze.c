@@ -4930,10 +4930,10 @@ int main(void) {
   int PS2_data, RVALID;
   char byte3 = 0;
 
-  int x1 = SCREEN_WIDTH / 2;  // Dot initial position (center)
-  int y1 = SCREEN_HEIGHT / 2;
-  int x2 = 100;  // Dot initial position (center)
-  int y2 = 100;
+  int x1 = 10;  // Player 1 entrance
+  int y1 = 210;
+  int x2 = 319;  // Player 2 entrance
+  int y2 = 210;
 
   /* set front pixel buffer to Buffer 1 */
   *(pixel_ctrl_ptr + 1) =
@@ -5214,13 +5214,13 @@ void check_and_correct_boundaries(int *x, int *y) {
 
 void move_player1(uint8_t scan_code, int *x, int *y) {
   if (scan_code == 0x1C) {  // 'A' pressed, move left
-    *x = *x > 0 ? *x - 1 : *x;
+    *x = *x > 0 ? *x - 3 : *x;
   } else if (scan_code == 0x1D) {  // 'W' pressed, move up
-    *y = *y > 0 ? *y - 1 : *y;
+    *y = *y > 0 ? *y - 3 : *y;
   } else if (scan_code == 0x1B) {  // 'S' pressed, move down
-    *y = *y < SCREEN_HEIGHT - 1 ? *y + 1 : *y;
+    *y = *y < SCREEN_HEIGHT - 3 ? *y + 3 : *y;
   } else if (scan_code == 0x23) {  // 'D' pressed, move right
-    *x = *x < SCREEN_WIDTH - 1 ? *x + 1 : *x;
+    *x = *x < SCREEN_WIDTH - 3 ? *x + 3 : *x;
   }
 
   check_and_correct_boundaries(x, y);
@@ -5228,13 +5228,13 @@ void move_player1(uint8_t scan_code, int *x, int *y) {
 
 void move_player2(uint8_t scan_code, int *x, int *y) {
   if (scan_code == 0x6B) {  // 'A' pressed, move left
-    *x = *x > 0 ? *x - 1 : *x;
+    *x = *x > 0 ? *x - 3 : *x;
   } else if (scan_code == 0x75) {  // 'W' pressed, move up
-    *y = *y > 0 ? *y - 1 : *y;
+    *y = *y > 0 ? *y - 3 : *y;
   } else if (scan_code == 0x72) {  // 'S' pressed, move down
-    *y = *y < SCREEN_HEIGHT - 1 ? *y + 1 : *y;
+    *y = *y < SCREEN_HEIGHT - 3 ? *y + 3 : *y;
   } else if (scan_code == 0x74) {  // 'D' pressed, move right
-    *x = *x < SCREEN_WIDTH - 1 ? *x + 1 : *x;
+    *x = *x < SCREEN_WIDTH - 3 ? *x + 3 : *x;
   }
 
   check_and_correct_boundaries(x, y);
