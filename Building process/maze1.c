@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const uint16_t image_for_levels[240][320] = {
+const uint16_t maze[240][320] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -4852,7 +4852,7 @@ void draw_maze_level2() {
 }
 
 void draw_menu() {
-  const short int(*image_colour)[320] = image_for_levels;
+  const short int(*image_colour)[320] = maze;
   for (int y = 0; y < 240; y++) {
     for (int x = 0; x < 320; x++) {
       plot_pixel(x, y, image_colour[y][x]);  // all black
