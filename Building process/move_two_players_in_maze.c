@@ -4931,9 +4931,9 @@ int main(void) {
   char byte3 = 0;
 
   int x1 = 10;  // Player 1 entrance
-  int y1 = 210;
-  int x2 = 319;  // Player 2 entrance
-  int y2 = 210;
+  int y1 = 203;
+  int x2 = 299;  // Player 2 entrance
+  int y2 = 203;
 
   /* set front pixel buffer to Buffer 1 */
   *(pixel_ctrl_ptr + 1) =
