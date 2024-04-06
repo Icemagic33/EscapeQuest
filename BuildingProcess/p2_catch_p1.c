@@ -11709,6 +11709,7 @@ void draw_character(int top_left_x, int top_left_y, unsigned int color,
                     int num);
 void display_hex(uint32_t number);
 bool is_blocked(int x, int y);
+bool has_caught(int p1_x, int p1_y, int p2_x, int p2_y);
 
 // global variable
 // int pixel_buffer_start;
@@ -11869,6 +11870,10 @@ int main(void) {
 
       wait_for_vsync();  // Swap buffers for smooth animation
       *(pixel_ctrl_ptr + 1) = pixel_buffer_start;  // Update back buffer address
+    }
+
+    if (has_caught(x1, y1, x2, y2)) {
+      break;
     }
 
     if (TIMER_BASE[0] & 0x1) {
@@ -12083,13 +12088,13 @@ void move_player1(uint8_t scan_code, int *x, int *y) {
   int new_x = *x, new_y = *y;
 
   if (scan_code == 0x1C) {  // 'A' pressed, move left
-    new_x -= 3;
+    new_x -= 4;
   } else if (scan_code == 0x1D) {  // 'W' pressed, move up
-    new_y -= 3;
+    new_y -= 4;
   } else if (scan_code == 0x1B) {  // 'S' pressed, move down
-    new_y += 3;
+    new_y += 4;
   } else if (scan_code == 0x23) {  // 'D' pressed, move right
-    new_x += 3;
+    new_x += 4;
   }
 
   if (!is_blocked(new_x, new_y)) {
@@ -12103,13 +12108,13 @@ void move_player2(uint8_t scan_code, int *x, int *y) {
   int new_x = *x, new_y = *y;
 
   if (scan_code == 0x6B) {  // 'A' pressed, move left
-    new_x -= 2;
+    new_x -= 3;
   } else if (scan_code == 0x75) {  // 'W' pressed, move up
-    new_y -= 2;
+    new_y -= 3;
   } else if (scan_code == 0x72) {  // 'S' pressed, move down
-    new_y += 2;
+    new_y += 3;
   } else if (scan_code == 0x74) {  // 'D' pressed, move right
-    new_x += 2;
+    new_x += 3;
   }
 
   if (!is_blocked(new_x, new_y)) {
@@ -12119,13 +12124,25 @@ void move_player2(uint8_t scan_code, int *x, int *y) {
   }
 }
 
-// void draw_character(int top_left_x, int top_left_y, int color) {
-//   for (int y = 0; y < 15; ++y) {
-//     for (int x = 0; x < 15; ++x) {
-//       plot_pixel(top_left_x + x, top_left_y + y, character[y][x]);
-//     }
-//   }
-// }
+bool has_caught(int p1_x, int p1_y, int p2_x, int p2_y) {
+  // Define the bounds of player 1
+  int p1_top = p1_y;
+  int p1_bottom = p1_y + 11;
+  int p1_left = p1_x;
+  int p1_right = p1_x + 11;
+
+  // Define the bounds of player 2
+  int p2_top = p2_y;
+  int p2_bottom = p2_y + 11;
+  int p2_left = p2_x;
+  int p2_right = p2_x + 11;
+
+  // Check for overlap between players
+  bool horizontal_overlap = (p1_left < p2_right) && (p1_right > p2_left);
+  bool vertical_overlap = (p1_top < p2_bottom) && (p1_bottom > p2_top);
+
+  return horizontal_overlap && vertical_overlap;
+}
 
 void draw_character(int top_left_x, int top_left_y, unsigned int color,
                     int num) {
