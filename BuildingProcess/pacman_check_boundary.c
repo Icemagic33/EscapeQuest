@@ -11834,20 +11834,20 @@ int main(void) {
   /* initialize a pointer to the pixel buffer, used by drawing functions */
   pixel_buffer_start = *pixel_ctrl_ptr;
   clear_screen();  // pixel_buffer_start points to the pixel buffer
-  draw_frame();
-  draw_entrance_exit();
-  draw_maze_level2();
-  //   draw_maze();
+                   //   draw_frame();
+                   //   draw_entrance_exit();
+                   //   draw_maze_level2();
+  draw_maze();
   wait_for_vsync();
 
   /* set back pixel buffer to Buffer 2 */
   *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
   clear_screen();  // pixel_buffer_start points to the pixel buffer
-  draw_frame();
-  draw_entrance_exit();
-  draw_maze_level2();
-  //   draw_maze();
+                   //   draw_frame();
+                   //   draw_entrance_exit();
+                   //   draw_maze_level2();
+  draw_maze();
   wait_for_vsync();
 
   // PS/2 keyboard reset
@@ -12089,7 +12089,7 @@ void check_and_correct_boundaries(int *x, int *y) {
 
 bool is_blocked(int x, int y) {
   const short int wall_color =
-      0x0000;  // Assuming black is the color for open paths
+      0x6000;  // Assuming black is the color for open paths
   // Loop over the character's bounding box
   for (int i = 0; i < CHARACTER_HEIGHT; i++) {
     for (int j = 0; j < CHARACTER_WIDTH; j++) {
@@ -12100,7 +12100,7 @@ bool is_blocked(int x, int y) {
           pixel_y >= SCREEN_HEIGHT) {
         return true;  // Treat out-of-bounds as blocked
       }
-      if (maze_pacman[pixel_y][pixel_x] != wall_color) {
+      if (maze_pacman[pixel_y][pixel_x] > wall_color) {
         return true;  // Blocked by a wall
       }
     }

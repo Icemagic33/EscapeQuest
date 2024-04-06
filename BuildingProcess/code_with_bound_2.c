@@ -5148,24 +5148,20 @@ int main(void) {
     }
     if (value == 2) {
       *LEDR_ptr = value;
-
       draw_maze_level2();
       wait_for_vsync();
       pixel_buffer_start = *(pixel_ctrl_ptr + 1);
       break;
     }
   }
-  // for level select
-  // draw_frame() ;
-  // draw_entrance_exit() ;
+
   volatile int *PS2_ptr = (int *)PS2_BASE;  // PS/2 base address
-  //   volatile int *pixel_ctrl_ptr = (int *)0xFF203020;        // Pixel
-  //   controller base address
+
   int buffer = 0;               // Start with Buffer1
-  unsigned long last_time = 0;  // Last time we updated the countdown
+  unsigned long last_time = -1;  // Last time we updated the countdown
 
   setup_timer();          // Initialize the timer for countdown
-  uint32_t counter = 30;  // Start counting from 9
+  uint32_t counter = 30;  // Start counting from 30
 
   int PS2_data, RVALID;
   char byte3 = 0;
@@ -5175,41 +5171,7 @@ int main(void) {
   int x2 = 299;  // Player 2 entrance
   int y2 = 210;
 
-  /* set front pixel buffer to Buffer 1 */
-  //*(pixel_ctrl_ptr + 1) =
-      //(int)&Buffer1;  // first store the address in the  back buffer
-  /* now, swap the front/back buffers, to set the front buffer location */
- // wait_for_vsync();
-  /* initialize a pointer to the pixel buffer, used by drawing functions */
   pixel_buffer_start = *pixel_ctrl_ptr;
-  //clear_screen();  // pixel_buffer_start points to the pixel buffer
- // draw_frame();
- // draw_entrance_exit();
-	//if(value == 1){
-	//	  draw_frame();
- 	//	 draw_entrance_exit();
-	//	draw_maze_level1() ; 
-	//}
-	//if(value == 2){
-//		  draw_maze_level2();
-		
-//	}
-
- // wait_for_vsync();
-
-  /* set back pixel buffer to Buffer 2 */
- // *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
- // pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
-//  clear_screen();  // pixel_buffer_start points to the pixel buffer
-///	if(value == 1){
-//		  draw_frame();
-//		 draw_entrance_exit();
-	//	draw_maze_level1() ; 
-	//}
-	//if(value == 2){
-	//	  draw_maze_level2();
-//	}
-//  wait_for_vsync();
 
   // PS/2 keyboard reset
   *PS2_ptr = 0xFF;  // Reset
@@ -5221,8 +5183,6 @@ int main(void) {
   int x2_old = x2, y2_old = y2;    // Position from two frames ago
   while (1) {
     display_hex(counter);
-    // unsigned long current_time = *TIMER_BASE;  // Assume TIMER_BASE points to
-    // a readable timer
 
     // Check for PS/2 keyboard inputs
     PS2_data = *PS2_ptr;         // Read the Data register in the PS/2 port
