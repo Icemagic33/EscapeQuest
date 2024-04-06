@@ -2,18 +2,21 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define COLOR_BACKGROUND 0x0000 /* Black, or transparent */
 #define COLOR_HAIR 0x7C1F       /* Brown hair */
 #define COLOR_SKIN 0xFEA0       /* Skin tone */
 #define COLOR_SHIRT 0x03BF      /* Blue shirt */
 #define COLOR_SHIRT_RED 0xF800
-#define COLOR_PANTS 0x001F /* Dark blue pants */
+#define COLOR_PANTS 0x001F  /* Dark blue pants */
+#define COLOR_GREEN 0x07E0  // Assuming 5-6-5 bit RGB for green
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 #define CHARACTER_WIDTH 11
 #define CHARACTER_HEIGHT 11
+#define DESTINATION_SIZE 5
 #define PS2_BASE 0xFF200100
 #define TIMER_BASE ((volatile int *)0xFF202000)
 #define HEX_BASE ((volatile int *)0xFF200020)  // HEX display
@@ -22,6 +25,11 @@
 #define BUFFER_HEIGHT 240        // Height matches the display height
 #define COUNTER_DELAY 100000000  // 1-second interval at 100 MHz clock
 #define RED 0xF800
+
+typedef struct {
+  int x;  // Top-left x coordinate of the destination
+  int y;  // Top-left y coordinate of the destination
+} Destination;
 
 const uint16_t lose[240][320] = {
     {0, 0,  0,  0, 0, 0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0, 0, 0, 0,
@@ -18224,15 +18232,12 @@ void draw_character(int top_left_x, int top_left_y, unsigned int color,
 void display_hex(uint32_t number);
 bool is_blocked(int x, int y);
 bool has_caught(int p1_x, int p1_y, int p2_x, int p2_y);
+Destination create_dynamic_destination();
+void draw_destination(Destination dest);
+bool has_reached_destination(int p1_x, int p1_y, Destination dest);
 
-// global variable
-// int pixel_buffer_start;
-// short int Buffer1[240][512];
-// short int Buffer2[240][512];
 int value;
-// void plot_pixel(int x, int y, short int line_color);
 void draw_line(int x0, int y0, int x1, int y1, short int color);
-// void clear_screen();
 void swap(int *x, int *y);
 void draw_frame();
 void draw_entrance_exit();
@@ -18257,6 +18262,7 @@ int main(void) {
   volatile int *pixel_ctrl_ptr = (int *)0xFF203020;
   volatile int *SW_ptr = (int *)0xff200040;
   volatile int *LEDR_ptr = (int *)0xff200000;
+  srand(time(NULL));
 
   /* Read location of the pixel buffer from the pixel buffer controller */
   pixel_buffer_start = *pixel_ctrl_ptr;
@@ -18300,7 +18306,7 @@ int main(void) {
   unsigned long last_time = 0;  // Last time we updated the countdown
 
   setup_timer();          // Initialize the timer for countdown
-  uint32_t counter = 30;  // Start counting from 9
+  uint32_t counter = 45;  // Start counting from 9
 
   int PS2_data, RVALID;
   char byte3 = 0;
@@ -18342,6 +18348,10 @@ int main(void) {
   int x1_old = x1, y1_old = y1;    // Position from two frames ago
   int x2_prev = x2, y2_prev = y2;  // Position from the last frame
   int x2_old = x2, y2_old = y2;    // Position from two frames ago
+
+  Destination dest = create_dynamic_destination();
+  draw_destination(dest);  // Draw the initial destination
+
   while (1) {
     display_hex(counter);
     // unsigned long current_time = *TIMER_BASE;  // Assume TIMER_BASE points to
@@ -18384,24 +18394,46 @@ int main(void) {
       *(pixel_ctrl_ptr + 1) = pixel_buffer_start;  // Update back buffer address
     }
 
-    if (has_caught(x1, y1, x2, y2)) {
+    if (has_caught(x1, y1, x2, y2) || counter == 0) {
+      break;
+    }
+
+    if (has_reached_destination(x1, y1, dest)) {
+      clear_destination(dest);
       break;
     }
 
     if (TIMER_BASE[0] & 0x1) {
       TIMER_BASE[0] = 0;  // Reset TO bit to count another second
-      if (counter > 0) {
-        counter--;
-      } else {
+      counter--;          // Decrement the main game counter every second
+
+      // Check if the 10-second interval has passed
+      if (counter % 10 == 0) {
+        // Clear the old destination
+        clear_destination(dest);
+
+        // Generate a new dynamic destination and draw it
+        dest = create_dynamic_destination();
+        draw_destination(dest);
+      }
+
+      if (counter == 0) {
+        // Counter has reached 0, time is up
         break;  // Exit loop when counter reaches 0
       }
     }
+
+    wait_for_vsync();
+    *(pixel_ctrl_ptr + 1) = pixel_buffer_start;  // Update back buffer address
   }
 
-  //   fill_screen_with_color(RED);  // Fill the screen with red
-  draw_screen(lose);
-  wait_for_vsync();
-
+  if (has_caught(x1, y1, x2, y2)) {
+    draw_screen(lose);
+    wait_for_vsync();
+  } else if (has_reached_destination(x1, y1, dest)) {
+    fill_screen_with_color(RED);  // Fill the screen with red
+    wait_for_vsync();
+  }
   return 0;
 }
 
@@ -18592,13 +18624,13 @@ void move_player1(uint8_t scan_code, int *x, int *y) {
   int new_x = *x, new_y = *y;
 
   if (scan_code == 0x1C) {  // 'A' pressed, move left
-    new_x -= 4;
+    new_x -= 3;
   } else if (scan_code == 0x1D) {  // 'W' pressed, move up
-    new_y -= 4;
+    new_y -= 3;
   } else if (scan_code == 0x1B) {  // 'S' pressed, move down
-    new_y += 4;
+    new_y += 3;
   } else if (scan_code == 0x23) {  // 'D' pressed, move right
-    new_x += 4;
+    new_x += 3;
   }
 
   if (!is_blocked(new_x, new_y)) {
@@ -18679,8 +18711,69 @@ void display_hex(uint32_t number) {
   }
 }
 
-void clear_players_keep_maze() {
-  draw_frame();
-  draw_entrance_exit();
-  draw_maze_level1();
+// Function to create a dynamic destination
+Destination create_dynamic_destination() {
+  Destination dest;
+  bool valid = false;
+
+  while (!valid) {
+    // Generate a random top-left corner for the destination
+    dest.x = rand() % (SCREEN_WIDTH - DESTINATION_SIZE);
+    dest.y = rand() % (SCREEN_HEIGHT - DESTINATION_SIZE);
+
+    // Assume the destination is valid until proven otherwise
+    valid = true;
+
+    // Check if the generated position is valid
+    for (int y = 0; y < DESTINATION_SIZE && valid; y++) {
+      for (int x = 0; x < DESTINATION_SIZE && valid; x++) {
+        if (maze_pacman[dest.y + y][dest.x + x] !=
+            0x0000) {     // If not black, it's a wall
+          valid = false;  // Destination overlaps with a wall, so it's not valid
+        }
+      }
+    }
+  }
+
+  return dest;
+}
+
+// Function to draw the destination on the screen
+void draw_destination(Destination dest) {
+  for (int y = 0; y < DESTINATION_SIZE; y++) {
+    for (int x = 0; x < DESTINATION_SIZE; x++) {
+      // Make sure the coordinates are within the screen bounds
+      if ((dest.x + x) < SCREEN_WIDTH && (dest.y + y) < SCREEN_HEIGHT) {
+        plot_pixel(dest.x + x, dest.y + y, COLOR_GREEN);
+      }
+    }
+  }
+}
+
+bool has_reached_destination(int p1_x, int p1_y, Destination dest) {
+  // Define the bounds of player 1
+  int p1_top = p1_y;
+  int p1_bottom = p1_y + 11;
+  int p1_left = p1_x;
+  int p1_right = p1_x + 11;
+
+  // Define the bounds of the destination
+  int dest_top = dest.y;
+  int dest_bottom = dest.y + DESTINATION_SIZE;
+  int dest_left = dest.x;
+  int dest_right = dest.x + DESTINATION_SIZE;
+
+  // Check for overlap between player 1 and the destination
+  bool horizontal_overlap = (p1_left < dest_right) && (p1_right > dest_left);
+  bool vertical_overlap = (p1_top < dest_bottom) && (p1_bottom > dest_top);
+
+  return horizontal_overlap && vertical_overlap;
+}
+
+void clear_destination(Destination dest) {
+  for (int y = 0; y < DESTINATION_SIZE; y++) {
+    for (int x = 0; x < DESTINATION_SIZE; x++) {
+      plot_pixel(dest.x + x, dest.y + y, COLOR_BACKGROUND);
+    }
+  }
 }
