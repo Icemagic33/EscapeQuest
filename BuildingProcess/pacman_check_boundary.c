@@ -11717,7 +11717,7 @@ unsigned int character[2][15][15] = {
       COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND,
       COLOR_BACKGROUND, COLOR_BACKGROUND, COLOR_BACKGROUND}}};
 
-volatile int pixel_buffer_start;  // global variable
+volatile int pixel_buffer_start;  // global variable for the pixel buffer
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
 uint32_t last_displayed_number =
@@ -11737,10 +11737,7 @@ void draw_player1(int x, int y);
 void draw_character(int top_left_x, int top_left_y, unsigned int color,
                     int num);
 void display_hex(uint32_t number);
-void clear_players_keep_maze();
-
-short int Buffer1[BUFFER_HEIGHT][BUFFER_WIDTH];  // Declared buffer
-volatile int pixel_buffer_start;  // Global variable for the pixel buffer
+bool is_blocked(int x, int y);
 
 // global variable
 // int pixel_buffer_start;
@@ -11824,10 +11821,10 @@ int main(void) {
   int PS2_data, RVALID;
   char byte3 = 0;
 
-  int x1 = 10;  // Player 1 entrance
-  int y1 = 203;
-  int x2 = 299;  // Player 2 entrance
-  int y2 = 203;
+  int x1 = 17;  // Player 1 entrance
+  int y1 = 205;
+  int x2 = 280;  // Player 2 entrance
+  int y2 = 205;
 
   /* set front pixel buffer to Buffer 1 */
   *(pixel_ctrl_ptr + 1) =
@@ -11837,20 +11834,20 @@ int main(void) {
   /* initialize a pointer to the pixel buffer, used by drawing functions */
   pixel_buffer_start = *pixel_ctrl_ptr;
   clear_screen();  // pixel_buffer_start points to the pixel buffer
-                   //   draw_frame();
-                   //   draw_entrance_exit();
-                   //   draw_maze_level2();
-  draw_maze();
+  draw_frame();
+  draw_entrance_exit();
+  draw_maze_level2();
+  //   draw_maze();
   wait_for_vsync();
 
   /* set back pixel buffer to Buffer 2 */
   *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
   clear_screen();  // pixel_buffer_start points to the pixel buffer
-  //   draw_frame();
-  //   draw_entrance_exit();
-  //   draw_maze_level2();
-  draw_maze();
+  draw_frame();
+  draw_entrance_exit();
+  draw_maze_level2();
+  //   draw_maze();
   wait_for_vsync();
 
   // PS/2 keyboard reset
@@ -12088,36 +12085,67 @@ void check_and_correct_boundaries(int *x, int *y) {
   } else if (*y + 15 >= SCREEN_HEIGHT) {
     *y = SCREEN_HEIGHT - 1;
   }
-
 }
 
+bool is_blocked(int x, int y) {
+  const short int wall_color =
+      0x0000;  // Assuming black is the color for open paths
+  // Loop over the character's bounding box
+  for (int i = 0; i < CHARACTER_HEIGHT; i++) {
+    for (int j = 0; j < CHARACTER_WIDTH; j++) {
+      int pixel_x = x + j;
+      int pixel_y = y + i;
+      // Check if within screen bounds to avoid accessing out of bounds
+      if (pixel_x < 0 || pixel_x >= SCREEN_WIDTH || pixel_y < 0 ||
+          pixel_y >= SCREEN_HEIGHT) {
+        return true;  // Treat out-of-bounds as blocked
+      }
+      if (maze_pacman[pixel_y][pixel_x] != wall_color) {
+        return true;  // Blocked by a wall
+      }
+    }
+  }
+  return false;  // Not blocked
+}
 
 void move_player1(uint8_t scan_code, int *x, int *y) {
+  int new_x = *x, new_y = *y;
+
   if (scan_code == 0x1C) {  // 'A' pressed, move left
-    *x = *x > 0 ? *x - 3 : *x;
+    new_x -= 3;
   } else if (scan_code == 0x1D) {  // 'W' pressed, move up
-    *y = *y > 0 ? *y - 3 : *y;
+    new_y -= 3;
   } else if (scan_code == 0x1B) {  // 'S' pressed, move down
-    *y = *y < SCREEN_HEIGHT - 3 ? *y + 3 : *y;
+    new_y += 3;
   } else if (scan_code == 0x23) {  // 'D' pressed, move right
-    *x = *x < SCREEN_WIDTH - 3 ? *x + 3 : *x;
+    new_x += 3;
   }
 
-  check_and_correct_boundaries(x, y);
+  if (!is_blocked(new_x, new_y)) {
+    *x = new_x;
+    *y = new_y;
+    check_and_correct_boundaries(x, y);
+  }
 }
 
 void move_player2(uint8_t scan_code, int *x, int *y) {
+  int new_x = *x, new_y = *y;
+
   if (scan_code == 0x6B) {  // 'A' pressed, move left
-    *x = *x > 0 ? *x - 3 : *x;
+    new_x -= 3;
   } else if (scan_code == 0x75) {  // 'W' pressed, move up
-    *y = *y > 0 ? *y - 3 : *y;
+    new_y -= 3;
   } else if (scan_code == 0x72) {  // 'S' pressed, move down
-    *y = *y < SCREEN_HEIGHT - 3 ? *y + 3 : *y;
+    new_y += 3;
   } else if (scan_code == 0x74) {  // 'D' pressed, move right
-    *x = *x < SCREEN_WIDTH - 3 ? *x + 3 : *x;
+    new_x += 3;
   }
 
-  check_and_correct_boundaries(x, y);
+  if (!is_blocked(new_x, new_y)) {
+    *x = new_x;
+    *y = new_y;
+    check_and_correct_boundaries(x, y);
+  }
 }
 
 // void draw_character(int top_left_x, int top_left_y, int color) {
