@@ -33591,8 +33591,8 @@ int main(void) {
       int value = *SW_ptr;
       if (value == 1) {
         *LEDR_ptr = value;
-		// memcpy(chosen_maze, maze1, sizeof(chosen_maze));
-		clear_screen();
+        // memcpy(chosen_maze, maze1, sizeof(chosen_maze));
+        clear_screen();
         draw_frame();
         draw_entrance_exit();
         draw_maze_level1();
@@ -33677,9 +33677,11 @@ int main(void) {
       if (RVALID) {
         // Move player based on the current input
         byte3 = PS2_data & 0xFF;
-        move_player1(byte3, &x1, &y1, chosen_maze);  // This updates the current position
+        move_player1(byte3, &x1, &y1,
+                     chosen_maze);  // This updates the current position
 
-        move_player2(byte3, &x2, &y2, chosen_maze);  // This updates the current position
+        move_player2(byte3, &x2, &y2,
+                     chosen_maze);  // This updates the current position
 
         // Erase the box from two frames ago
         draw_character(x1_old, y1_old, COLOR_BACKGROUND,
@@ -33792,6 +33794,20 @@ void swap(int *x, int *y) {
   int temp = *x;
   *x = *y;
   *y = temp;
+}
+
+void draw_frame() {
+  draw_line(0, 0, 0, 240, 0x07e0);
+  draw_line(0, 0, 320, 0, 0x07e0);
+  draw_line(319, 0, 319, 240, 0x07e0);
+  draw_line(0, 239, 319, 239, 0x07e0);
+}
+
+void draw_entrance_exit() {
+  draw_line(0, 200, 0, 220, 0x0);
+  // draw_line(0,0, 320, 0 , 0x0) ;
+  draw_line(319, 200, 319, 220, 0x0);
+  // draw_line(0,239, 319, 239 , 0x0) ;
 }
 
 void draw_screen(int draw[320][240]) {
