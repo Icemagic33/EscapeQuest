@@ -25,6 +25,7 @@
 #define BUFFER_HEIGHT 240        // Height matches the display height
 #define COUNTER_DELAY 100000000  // 1-second interval at 100 MHz clock
 #define RED 0xF800
+#define PS2_IRQ 7  // Interrupt request line for PS/2
 
 typedef struct {
   int x;  // Top-left x coordinate of the destination
@@ -18236,6 +18237,11 @@ Destination create_dynamic_destination();
 void draw_destination(Destination dest);
 bool has_reached_destination(int p1_x, int p1_y, Destination dest);
 
+// Global buffer and read index
+volatile char ps2_data_buffer[256];
+volatile int ps2_data_read_index = 0;
+volatile int ps2_data_write_index = 0;
+
 int value;
 void draw_line(int x0, int y0, int x1, int y1, short int color);
 void swap(int *x, int *y);
@@ -18296,13 +18302,9 @@ int main(void) {
       break;
     }
   }
-  // for level select
-  // draw_frame() ;
-  // draw_entrance_exit() ;
+
   volatile int *PS2_ptr = (int *)PS2_BASE;  // PS/2 base address
-  //   volatile int *pixel_ctrl_ptr = (int *)0xFF203020;        // Pixel
-  //   controller base address
-  int buffer = 0;               // Start with Buffer1
+  int buffer = 0;                           // Start with Buffer1
   unsigned long last_time = 0;  // Last time we updated the countdown
 
   setup_timer();          // Initialize the timer for countdown
