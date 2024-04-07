@@ -33592,8 +33592,25 @@ int main(void) {
         memcpy(chosen_maze, maze2, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
-        draw_screen(chosen_maze);  // Draw the chosen maze
-        pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+        /* set front pixel buffer to Buffer 1 */
+        *(pixel_ctrl_ptr + 1) =
+            (int)&Buffer1;  // first store the address in the  back buffer
+        /* now, swap the front/back buffers, to set the front buffer location */
+        wait_for_vsync();
+        /* initialize a pointer to the pixel buffer, used by drawing functions
+         */
+        pixel_buffer_start = *pixel_ctrl_ptr;
+        clear_screen();  // pixel_buffer_start points to the pixel buffer
+        draw_screen(chosen_maze);
+        wait_for_vsync();
+
+        /* set back pixel buffer to Buffer 2 */
+        *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
+        pixel_buffer_start =
+            *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
+        clear_screen();  // pixel_buffer_start points to the pixel buffer
+        draw_screen(chosen_maze);
+        wait_for_vsync();
         break;
       }
       if (value == 0b10) {
@@ -33601,8 +33618,25 @@ int main(void) {
         memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
-        draw_screen(chosen_maze); 
-        pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+        /* set front pixel buffer to Buffer 1 */
+        *(pixel_ctrl_ptr + 1) =
+            (int)&Buffer1;  // first store the address in the  back buffer
+        /* now, swap the front/back buffers, to set the front buffer location */
+        wait_for_vsync();
+        /* initialize a pointer to the pixel buffer, used by drawing functions
+         */
+        pixel_buffer_start = *pixel_ctrl_ptr;
+        clear_screen();  // pixel_buffer_start points to the pixel buffer
+        draw_screen(chosen_maze);
+        wait_for_vsync();
+
+        /* set back pixel buffer to Buffer 2 */
+        *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
+        pixel_buffer_start =
+            *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
+        clear_screen();  // pixel_buffer_start points to the pixel buffer
+        draw_screen(chosen_maze);
+        wait_for_vsync();
         break;
       }
       if (value == 0b100) {
@@ -33610,8 +33644,25 @@ int main(void) {
         memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
-        draw_screen(chosen_maze);
-        pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+        /* set front pixel buffer to Buffer 1 */
+        *(pixel_ctrl_ptr + 1) =
+            (int)&Buffer1;  // first store the address in the  back buffer
+        /* now, swap the front/back buffers, to set the front buffer location */
+        wait_for_vsync();
+        /* initialize a pointer to the pixel buffer, used by drawing functions
+         */
+        pixel_buffer_start = *pixel_ctrl_ptr;
+        clear_screen();  // pixel_buffer_start points to the pixel buffer
+        // draw_screen(chosen_maze);
+        wait_for_vsync();
+
+        /* set back pixel buffer to Buffer 2 */
+        *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
+        pixel_buffer_start =
+            *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
+        clear_screen();  // pixel_buffer_start points to the pixel buffer
+        // draw_screen(chosen_maze);
+        wait_for_vsync();
         break;
       }
     }
@@ -33631,23 +33682,23 @@ int main(void) {
     int x2 = 293;  // Player 2 entrance
     int y2 = 205;
 
-    /* set front pixel buffer to Buffer 1 */
-    *(pixel_ctrl_ptr + 1) =
-        (int)&Buffer1;  // first store the address in the  back buffer
-    /* now, swap the front/back buffers, to set the front buffer location */
-    wait_for_vsync();
-    /* initialize a pointer to the pixel buffer, used by drawing functions */
-    pixel_buffer_start = *pixel_ctrl_ptr;
-    clear_screen();  // pixel_buffer_start points to the pixel buffer
-    draw_screen(chosen_maze);
-    wait_for_vsync();
+    // /* set front pixel buffer to Buffer 1 */
+    // *(pixel_ctrl_ptr + 1) =
+    //     (int)&Buffer1;  // first store the address in the  back buffer
+    // /* now, swap the front/back buffers, to set the front buffer location */
+    // wait_for_vsync();
+    // /* initialize a pointer to the pixel buffer, used by drawing functions */
+    // pixel_buffer_start = *pixel_ctrl_ptr;
+    // clear_screen();  // pixel_buffer_start points to the pixel buffer
+    // draw_screen(chosen_maze);
+    // wait_for_vsync();
 
-    /* set back pixel buffer to Buffer 2 */
-    *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
-    pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
-    clear_screen();  // pixel_buffer_start points to the pixel buffer
-    draw_screen(chosen_maze);
-    wait_for_vsync();
+    // /* set back pixel buffer to Buffer 2 */
+    // *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
+    // pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // we draw on the back
+    // buffer clear_screen();  // pixel_buffer_start points to the pixel buffer
+    // draw_screen(chosen_maze);
+    // wait_for_vsync();
 
     // PS/2 keyboard reset
     *PS2_ptr = 0xFF;  // Reset
