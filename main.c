@@ -1,7 +1,8 @@
 #include "characters.c"
 #include "globals.h"
+#include "maze2.c"
+#include "maze3.c"
 #include "menu.c"
-#include "pacman_maze.c"
 
 volatile int pixel_buffer_start;  // global variable for the pixel buffer
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
