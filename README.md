@@ -34,4 +34,8 @@ This maze is mysterious. The boarders are black! You must find your way through 
 
 <img width="480" alt="player1wins" src="https://github.com/Icemagic33/EscapeQuest/assets/78094725/602c55c4-0fdc-4896-814d-5b74796ce86a">
 
+## Game play demo on CPULator 
+
+https://github.com/Icemagic33/EscapeQuest/assets/78094725/073791a4-8465-4052-9f6d-ed3d1884f652
+
 
