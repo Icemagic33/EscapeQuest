@@ -33550,8 +33550,6 @@ void draw_line(int x0, int y0, int x1, int y1, short int color);
 void swap(int *x, int *y);
 void draw_frame();
 void draw_entrance_exit();
-void draw_maze_level1();
-void draw_maze_level2();
 
 // Digit to 7-segment encoding for common anode HEX display
 int digit_to_segment[10] = {
@@ -33593,9 +33591,6 @@ int main(void) {
         *LEDR_ptr = value;
         // memcpy(chosen_maze, maze1, sizeof(chosen_maze));
         clear_screen();
-        draw_frame();
-        draw_entrance_exit();
-        draw_maze_level1();
         wait_for_vsync();
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
@@ -33604,9 +33599,6 @@ int main(void) {
         *LEDR_ptr = value;
         memcpy(chosen_maze, maze2, sizeof(chosen_maze));
         clear_screen();
-        draw_frame();
-        draw_entrance_exit();
-        draw_maze_level2();
         wait_for_vsync();
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
@@ -33794,20 +33786,6 @@ void swap(int *x, int *y) {
   int temp = *x;
   *x = *y;
   *y = temp;
-}
-
-void draw_frame() {
-  draw_line(0, 0, 0, 240, 0x07e0);
-  draw_line(0, 0, 320, 0, 0x07e0);
-  draw_line(319, 0, 319, 240, 0x07e0);
-  draw_line(0, 239, 319, 239, 0x07e0);
-}
-
-void draw_entrance_exit() {
-  draw_line(0, 200, 0, 220, 0x0);
-  // draw_line(0,0, 320, 0 , 0x0) ;
-  draw_line(319, 200, 319, 220, 0x0);
-  // draw_line(0,239, 319, 239 , 0x0) ;
 }
 
 void draw_screen(int draw[320][240]) {
