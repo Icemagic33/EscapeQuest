@@ -33532,24 +33532,28 @@ void check_and_correct_boundaries(int *x, int *y);
 void setup_timer();
 void delay_1sec();
 void fill_screen_with_color(short int color);
-void move_player1(uint8_t scan_code, int *x, int *y);
-void move_player2(uint8_t scan_code, int *x, int *y);
+void move_player1_2(uint8_t scan_code, int *x, int *y);
+void move_player2_2(uint8_t scan_code, int *x, int *y);
+void move_player1_3(uint8_t scan_code, int *x, int *y);
+void move_player2_3(uint8_t scan_code, int *x, int *y);
+
 void draw_player1(int x, int y);
 void draw_character(int top_left_x, int top_left_y, unsigned int color,
                     int num);
 void display_hex(uint32_t number);
-bool is_blocked(int x, int y);
+bool is_blocked2(int x, int y);
+bool is_blocked3(int x, int y);
 bool has_caught(int p1_x, int p1_y, int p2_x, int p2_y);
 Destination create_dynamic_destination(int maze[320][240]);
 void draw_destination(Destination dest);
 bool has_reached_destination(int p1_x, int p1_y, Destination dest);
 void clear_hex_display(void);
 
-int value;
 void draw_line(int x0, int y0, int x1, int y1, short int color);
 void swap(int *x, int *y);
 void draw_frame();
 void draw_entrance_exit();
+int value;
 
 // Digit to 7-segment encoding for common anode HEX display
 int digit_to_segment[10] = {
@@ -33585,8 +33589,9 @@ int main(void) {
     int chosen_maze[320][240] = {0};
 
     // decide map level 1 to 3
+
     while (1) {
-      int value = *SW_ptr;
+      value = *SW_ptr;
       if (value == 0b1) {
         *LEDR_ptr = value;
         memcpy(chosen_maze, maze2, sizeof(chosen_maze));
@@ -33610,7 +33615,7 @@ int main(void) {
         memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
-        draw_screen(chosen_maze);
+        // draw_screen(chosen_maze);
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
       }
@@ -33667,41 +33672,75 @@ int main(void) {
       // Check for PS/2 keyboard inputs
       PS2_data = *PS2_ptr;         // Read the Data register in the PS/2 port
       RVALID = PS2_data & 0x8000;  // Extract the RVALID field
-      // Inside the main loop, before clear_screen()
+      
       if (RVALID) {
-        // Move player based on the current input
-        byte3 = PS2_data & 0xFF;
-        move_player1(byte3, &x1, &y1);  // This updates the current position
+        value = *SW_ptr;
+        if (value == 0b1) {
+          // Move player based on the current input
+          byte3 = PS2_data & 0xFF;
+          move_player1_2(byte3, &x1, &y1);  // This updates the current position
 
-        move_player2(byte3, &x2, &y2);  // This updates the current position
+          move_player2_2(byte3, &x2, &y2);  // This updates the current position
 
-        // Erase the box from two frames ago
-        draw_character(x1_old, y1_old, COLOR_BACKGROUND,
-                       0);  // Erases by drawing with background color
-        draw_character(x2_old, y2_old, COLOR_BACKGROUND,
-                       1);  // Erases by drawing with background color
+          // Erase the box from two frames ago
+          draw_character(x1_old, y1_old, COLOR_BACKGROUND,
+                         0);  // Erases by drawing with background color
+          draw_character(x2_old, y2_old, COLOR_BACKGROUND,
+                         1);  // Erases by drawing with background color
 
-        // Draw the character in its new position
-        draw_character(x1, y1, 0xFFFF,
-                       0);  // draws the character with its appropriate color
+          // Draw the character in its new position
+          draw_character(x1, y1, 0xFFFF,
+                         0);  // draws the character with its appropriate color
 
-        draw_character(x2, y2, 0xFFFF, 1);
-        // Update positions for the next frame
-        x1_old = x1_prev;
-        y1_old = y1_prev;
-        x1_prev = x1;
-        y1_prev = y1;
+          draw_character(x2, y2, 0xFFFF, 1);
+          // Update positions for the next frame
+          x1_old = x1_prev;
+          y1_old = y1_prev;
+          x1_prev = x1;
+          y1_prev = y1;
 
-        x2_old = x2_prev;
-        y2_old = y2_prev;
-        x2_prev = x2;
-        y2_prev = y2;
+          x2_old = x2_prev;
+          y2_old = y2_prev;
+          x2_prev = x2;
+          y2_prev = y2;
 
-        wait_for_vsync();  // Swap buffers for smooth animation
-        *(pixel_ctrl_ptr + 1) =
-            pixel_buffer_start;  // Update back buffer address
+          wait_for_vsync();  // Swap buffers for smooth animation
+          *(pixel_ctrl_ptr + 1) =
+              pixel_buffer_start;  // Update back buffer address
+        } else {
+          // Move player based on the current input
+          byte3 = PS2_data & 0xFF;
+          move_player1_3(byte3, &x1, &y1);  // This updates the current position
+
+          move_player2_3(byte3, &x2, &y2);  // This updates the current position
+
+          // Erase the box from two frames ago
+          draw_character(x1_old, y1_old, COLOR_BACKGROUND,
+                         0);  // Erases by drawing with background color
+          draw_character(x2_old, y2_old, COLOR_BACKGROUND,
+                         1);  // Erases by drawing with background color
+
+          // Draw the character in its new position
+          draw_character(x1, y1, 0xFFFF,
+                         0);  // draws the character with its appropriate color
+
+          draw_character(x2, y2, 0xFFFF, 1);
+          // Update positions for the next frame
+          x1_old = x1_prev;
+          y1_old = y1_prev;
+          x1_prev = x1;
+          y1_prev = y1;
+
+          x2_old = x2_prev;
+          y2_old = y2_prev;
+          x2_prev = x2;
+          y2_prev = y2;
+
+          wait_for_vsync();  // Swap buffers for smooth animation
+          *(pixel_ctrl_ptr + 1) =
+              pixel_buffer_start;  // Update back buffer address
+        }
       }
-
       if (has_caught(x1, y1, x2, y2) || counter == 0) {
         break;
       }
@@ -33869,7 +33908,7 @@ void check_and_correct_boundaries(int *x, int *y) {
   }
 }
 
-bool is_blocked(int x, int y) {
+bool is_blocked3(int x, int y) {
   const short int wall_color = 0x0000;
   // Loop over the character's bounding box
   for (int i = 0; i < CHARACTER_HEIGHT; i++) {
@@ -33889,7 +33928,27 @@ bool is_blocked(int x, int y) {
   return false;  // Not blocked
 }
 
-void move_player1(uint8_t scan_code, int *x, int *y) {
+bool is_blocked2(int x, int y) {
+  const short int wall_color = 0x0000;
+  // Loop over the character's bounding box
+  for (int i = 0; i < CHARACTER_HEIGHT; i++) {
+    for (int j = 0; j < CHARACTER_WIDTH; j++) {
+      int pixel_x = x + j;
+      int pixel_y = y + i;
+      // Check if within screen bounds to avoid accessing out of bounds
+      if (pixel_x < 0 || pixel_x >= SCREEN_WIDTH || pixel_y < 0 ||
+          pixel_y >= SCREEN_HEIGHT) {
+        return true;  // Treat out-of-bounds as blocked
+      }
+      if (maze2[pixel_y][pixel_x] > wall_color) {
+        return true;  // Blocked by a wall
+      }
+    }
+  }
+  return false;  // Not blocked
+}
+
+void move_player1_2(uint8_t scan_code, int *x, int *y) {
   int new_x = *x, new_y = *y;
 
   if (scan_code == 0x1C) {  // 'A' pressed, move left
@@ -33902,14 +33961,14 @@ void move_player1(uint8_t scan_code, int *x, int *y) {
     new_x += 3;
   }
 
-  if (!is_blocked(new_x, new_y)) {
+  if (!is_blocked2(new_x, new_y)) {
     *x = new_x;
     *y = new_y;
     check_and_correct_boundaries(x, y);
   }
 }
 
-void move_player2(uint8_t scan_code, int *x, int *y) {
+void move_player2_2(uint8_t scan_code, int *x, int *y) {
   int new_x = *x, new_y = *y;
 
   if (scan_code == 0x6B) {  // 'A' pressed, move left
@@ -33922,7 +33981,46 @@ void move_player2(uint8_t scan_code, int *x, int *y) {
     new_x += 3;
   }
 
-  if (!is_blocked(new_x, new_y)) {
+  if (!is_blocked2(new_x, new_y)) {
+    *x = new_x;
+    *y = new_y;
+    check_and_correct_boundaries(x, y);
+  }
+}
+void move_player1_3(uint8_t scan_code, int *x, int *y) {
+  int new_x = *x, new_y = *y;
+
+  if (scan_code == 0x1C) {  // 'A' pressed, move left
+    new_x -= 3;
+  } else if (scan_code == 0x1D) {  // 'W' pressed, move up
+    new_y -= 3;
+  } else if (scan_code == 0x1B) {  // 'S' pressed, move down
+    new_y += 3;
+  } else if (scan_code == 0x23) {  // 'D' pressed, move right
+    new_x += 3;
+  }
+
+  if (!is_blocked3(new_x, new_y)) {
+    *x = new_x;
+    *y = new_y;
+    check_and_correct_boundaries(x, y);
+  }
+}
+
+void move_player2_3(uint8_t scan_code, int *x, int *y) {
+  int new_x = *x, new_y = *y;
+
+  if (scan_code == 0x6B) {  // 'A' pressed, move left
+    new_x -= 3;
+  } else if (scan_code == 0x75) {  // 'W' pressed, move up
+    new_y -= 3;
+  } else if (scan_code == 0x72) {  // 'S' pressed, move down
+    new_y += 3;
+  } else if (scan_code == 0x74) {  // 'D' pressed, move right
+    new_x += 3;
+  }
+
+  if (!is_blocked3(new_x, new_y)) {
     *x = new_x;
     *y = new_y;
     check_and_correct_boundaries(x, y);
