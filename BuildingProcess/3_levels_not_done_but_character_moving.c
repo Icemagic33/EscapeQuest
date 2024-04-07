@@ -33601,7 +33601,7 @@ int main(void) {
         memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
-        draw_screen(chosen_maze); 
+        draw_screen(chosen_maze);
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
       }

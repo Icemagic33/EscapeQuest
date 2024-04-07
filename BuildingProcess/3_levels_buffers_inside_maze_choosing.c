@@ -33589,7 +33589,7 @@ int main(void) {
       int value = *SW_ptr;
       if (value == 0b1) {
         *LEDR_ptr = value;
-        memcpy(chosen_maze, maze2, sizeof(chosen_maze));
+        memcpy(chosen_maze, maze2, sizeof(int) * SCREEN_WIDTH * SCREEN_HEIGHT);
         clear_screen();
         wait_for_vsync();
         /* set front pixel buffer to Buffer 1 */
@@ -33615,7 +33615,7 @@ int main(void) {
       }
       if (value == 0b10) {
         *LEDR_ptr = value;
-        memcpy(chosen_maze, maze3, sizeof(chosen_maze));
+        memcpy(chosen_maze, maze3, sizeof(int) * SCREEN_WIDTH * SCREEN_HEIGHT);
         clear_screen();
         wait_for_vsync();
         /* set front pixel buffer to Buffer 1 */
@@ -33641,7 +33641,7 @@ int main(void) {
       }
       if (value == 0b100) {
         *LEDR_ptr = value;
-        memcpy(chosen_maze, maze3, sizeof(chosen_maze));
+        memcpy(chosen_maze, maze3, sizeof(int) * SCREEN_WIDTH * SCREEN_HEIGHT);
         clear_screen();
         wait_for_vsync();
         /* set front pixel buffer to Buffer 1 */
