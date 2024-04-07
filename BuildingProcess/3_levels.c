@@ -25945,7 +25945,7 @@ void draw_maze_level1();
 void draw_maze_level2();
 
 // Digit to 7-segment encoding for common anode HEX display
-int digit_to_segment[10] = {
+int digit_to_segment[11] = {
     0x3F,  // 0
     0x06,  // 1
     0x5B,  // 2
@@ -25956,6 +25956,7 @@ int digit_to_segment[10] = {
     0x07,  // 7
     0x7F,  // 8
     0x6F   // 9
+    0x00,  // blank
 };
 
 int main(void) {
@@ -26151,7 +26152,7 @@ int main(void) {
       }
       wait_for_vsync();
     }
-	clear_screen();
+    clear_screen();
   }
   return 0;
 }
