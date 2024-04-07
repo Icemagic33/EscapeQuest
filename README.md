@@ -24,7 +24,7 @@ This maze is mysterious. The boarders are black! You must find your way through 
 <img width="480" alt="maze3" src="https://github.com/Icemagic33/EscapeQuest/assets/78094725/545bcd1a-b0a0-4f69-a0db-a637dc0cab08">
 
 ## Player 1 Wins
-![player1win](https://github.com/Icemagic33/EscapeQuest/assets/78094725/40ee11cc-fef9-427c-8d73-8854d9b41b53) * 0.5
+![player1win](https://github.com/Icemagic33/EscapeQuest/assets/78094725/40ee11cc-fef9-427c-8d73-8854d9b41b53) 
 
 ## Player 2 Wins
 ![player2win](https://github.com/Icemagic33/EscapeQuest/assets/78094725/602c55c4-0fdc-4896-814d-5b74796ce86a)
