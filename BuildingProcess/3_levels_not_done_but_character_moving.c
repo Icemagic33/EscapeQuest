@@ -33532,13 +33532,13 @@ void check_and_correct_boundaries(int *x, int *y);
 void setup_timer();
 void delay_1sec();
 void fill_screen_with_color(short int color);
-void move_player1(uint8_t scan_code, int *x, int *y, int maze[320][240]);
-void move_player2(uint8_t scan_code, int *x, int *y, int maze[320][240]);
+void move_player1(uint8_t scan_code, int *x, int *y);
+void move_player2(uint8_t scan_code, int *x, int *y);
 void draw_player1(int x, int y);
 void draw_character(int top_left_x, int top_left_y, unsigned int color,
                     int num);
 void display_hex(uint32_t number);
-bool is_blocked(int x, int y, int maze[320][240]);
+bool is_blocked(int x, int y);
 bool has_caught(int p1_x, int p1_y, int p2_x, int p2_y);
 Destination create_dynamic_destination(int maze[320][240]);
 void draw_destination(Destination dest);
@@ -33587,28 +33587,30 @@ int main(void) {
     // decide map level 1 to 3
     while (1) {
       int value = *SW_ptr;
-      if (value == 1) {
+      if (value == 0b1) {
         *LEDR_ptr = value;
         // memcpy(chosen_maze, maze1, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
+        draw_screen(chosen_maze);  // Draw the chosen maze
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
       }
-      if (value == 2) {
+      if (value == 0b10) {
         *LEDR_ptr = value;
         memcpy(chosen_maze, maze2, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
+        draw_screen(chosen_maze);  // Draw the chosen maze
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
       }
-      if (value == 3) {
+      if (value == 0b100) {
         *LEDR_ptr = value;
         memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();
-        draw_screen(maze3);
         wait_for_vsync();
+        draw_screen(chosen_maze);  // Use chosen_maze here as well
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
       }
@@ -33669,11 +33671,9 @@ int main(void) {
       if (RVALID) {
         // Move player based on the current input
         byte3 = PS2_data & 0xFF;
-        move_player1(byte3, &x1, &y1,
-                     chosen_maze);  // This updates the current position
+        move_player1(byte3, &x1, &y1);  // This updates the current position
 
-        move_player2(byte3, &x2, &y2,
-                     chosen_maze);  // This updates the current position
+        move_player2(byte3, &x2, &y2);  // This updates the current position
 
         // Erase the box from two frames ago
         draw_character(x1_old, y1_old, COLOR_BACKGROUND,
@@ -33869,9 +33869,8 @@ void check_and_correct_boundaries(int *x, int *y) {
   }
 }
 
-bool is_blocked(int x, int y, int maze[320][240]) {
-  const short int wall_color =
-      0x6000;  // Assuming black is the color for open paths
+bool is_blocked(int x, int y) {
+  const short int wall_color = 0x0000;
   // Loop over the character's bounding box
   for (int i = 0; i < CHARACTER_HEIGHT; i++) {
     for (int j = 0; j < CHARACTER_WIDTH; j++) {
@@ -33882,7 +33881,7 @@ bool is_blocked(int x, int y, int maze[320][240]) {
           pixel_y >= SCREEN_HEIGHT) {
         return true;  // Treat out-of-bounds as blocked
       }
-      if (maze[pixel_y][pixel_x] > wall_color) {
+      if (maze3[pixel_y][pixel_x] > wall_color) {
         return true;  // Blocked by a wall
       }
     }
@@ -33890,7 +33889,7 @@ bool is_blocked(int x, int y, int maze[320][240]) {
   return false;  // Not blocked
 }
 
-void move_player1(uint8_t scan_code, int *x, int *y, int maze[320][240]) {
+void move_player1(uint8_t scan_code, int *x, int *y) {
   int new_x = *x, new_y = *y;
 
   if (scan_code == 0x1C) {  // 'A' pressed, move left
@@ -33903,14 +33902,14 @@ void move_player1(uint8_t scan_code, int *x, int *y, int maze[320][240]) {
     new_x += 3;
   }
 
-  if (!is_blocked(new_x, new_y, maze)) {
+  if (!is_blocked(new_x, new_y)) {
     *x = new_x;
     *y = new_y;
     check_and_correct_boundaries(x, y);
   }
 }
 
-void move_player2(uint8_t scan_code, int *x, int *y, int maze[320][240]) {
+void move_player2(uint8_t scan_code, int *x, int *y) {
   int new_x = *x, new_y = *y;
 
   if (scan_code == 0x6B) {  // 'A' pressed, move left
@@ -33923,7 +33922,7 @@ void move_player2(uint8_t scan_code, int *x, int *y, int maze[320][240]) {
     new_x += 3;
   }
 
-  if (!is_blocked(new_x, new_y, maze)) {
+  if (!is_blocked(new_x, new_y)) {
     *x = new_x;
     *y = new_y;
     check_and_correct_boundaries(x, y);
@@ -33988,16 +33987,16 @@ Destination create_dynamic_destination(int maze[320][240]) {
 
   while (!valid) {
     // Generate a random top-left corner for the destination
-    dest.x = rand() % (SCREEN_WIDTH - DESTINATION_SIZE);
-    dest.y = rand() % (SCREEN_HEIGHT - DESTINATION_SIZE);
+    dest.x = rand() % (SCREEN_WIDTH - 100 - DESTINATION_SIZE);
+    dest.y = rand() % (SCREEN_HEIGHT - 100 - DESTINATION_SIZE);
 
     // Assume the destination is valid until proven otherwise
     valid = true;
 
     // Check if the generated position is valid
-    for (int y = 0; y < DESTINATION_SIZE && valid; y++) {
-      for (int x = 0; x < DESTINATION_SIZE && valid; x++) {
-        if (maze[dest.y + y][dest.x + x] !=
+    for (int y = 0; y < DESTINATION_SIZE + 3 && valid; y++) {
+      for (int x = 0; x < DESTINATION_SIZE + 3 && valid; x++) {
+        if (maze[dest.y - 3 + y][dest.x - 3 + x] !=
             0x0000) {     // If not black, it's a wall
           valid = false;  // Destination overlaps with a wall, so it's not valid
         }
