@@ -25,10 +25,6 @@ This game is developed for systems equipped with the Nios II processor, leveragi
 ## Getting Started
 To get started with this game, clone this repository to your local environment and follow the setup instructions provided in the documentation. You'll need a system configured with the Nios II processor and appropriate software tools for deployment.
 
-## Contributions
-Contributions to the game are welcome! Whether it's suggesting new features, refining the gameplay, or reporting bugs, your input helps make this game more enjoyable for everyone.
-Dive into the maze, strategize your moves, and enjoy the chase! Whether you're evading capture or in hot pursuit, this game promises heart-pounding action and fun for all players.
-
 ## Features 
 ### Menu 
 This is the menu screen. Use the switch on the DE1-SoC board to select maze/difficulty.
@@ -64,4 +60,7 @@ This maze is mysterious. The boarders are black! You must find your way through 
 
 https://github.com/Icemagic33/EscapeQuest/assets/78094725/073791a4-8465-4052-9f6d-ed3d1884f652
 
+## Contributions
+Contributions to the game are welcome! Whether it's suggesting new features, refining the gameplay, or reporting bugs, your input helps make this game more enjoyable for everyone.
+Dive into the maze, strategize your moves, and enjoy the chase! Whether you're evading capture or in hot pursuit, this game promises heart-pounding action and fun for all players.
 
