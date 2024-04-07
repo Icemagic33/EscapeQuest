@@ -15,7 +15,8 @@ Hand created maze. Since the maze has lots of holes, it is easier for player 1 t
 
 ## Maze 2 
 Pacman style maze. It is getting harder! Building a game plan in advance is needed. Also, luck is needed as the checkpoints are located randomly!
-<img width="160" alt="Screenshot 2024-04-05 at 4 11 42" src="https://github.com/Icemagic33/EscapeQuest/assets/78094725/5b393ef8-4214-455a-b70c-c5e4f3e009a0">
+<img width="960" alt="Screenshot 2024-04-05 at 4 11 42" src="https://github.com/Icemagic33/EscapeQuest/assets/78094725/4b964856-5d6f-4a52-a903-85d13db08e76">
+
 
 ## Maze 3
 This maze is mysterious. The boarders are black! You must find your way through the maze blindfolded. Suspense!
