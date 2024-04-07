@@ -1,3 +1,6 @@
+#ifndef GLOBAL
+#define GLOBAL
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -31,3 +34,5 @@ struct Maze {
 
 extern const uint16_t maze_pacman[240][320];
 extern const uint16_t menu[240][320];
+
+#endif

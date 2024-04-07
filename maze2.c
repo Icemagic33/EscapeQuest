@@ -1,3 +1,6 @@
+#ifndef GLOBAL
+#define GLOBAL
+
 #include <stdint.h>
 
 const uint16_t maze2[240][320] = {
@@ -7470,3 +7473,5 @@ const uint16_t maze2[240][320] = {
      23243, 23243, 23243, 21162, 23211, 23243, 23243, 19049, 10597, 6307},
 
 };
+
+#endif
