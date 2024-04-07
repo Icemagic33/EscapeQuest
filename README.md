@@ -10,7 +10,7 @@ This is the menu screen. Use the switch on the DE1-SoC board to select maze/diff
 
 ## Maze 1
 Hand created maze. Since the maze has lots of holes, it is easier for player 1 to reach its checkpoint. 
-![maze2_revised (1)](https://github.com/Icemagic33/EscapeQuest/assets/78094725/225faa1f-9275-49da-a94a-826870d61ec0)
+![maze2_revised](https://github.com/Icemagic33/EscapeQuest/assets/78094725/5a6c4a67-4067-4157-a4a9-26facba18e8c)
 
 
 ## Maze 2 
