@@ -33589,7 +33589,7 @@ int main(void) {
       int value = *SW_ptr;
       if (value == 0b1) {
         *LEDR_ptr = value;
-        // memcpy(chosen_maze, maze1, sizeof(chosen_maze));
+        memcpy(chosen_maze, maze2, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
         draw_screen(chosen_maze);  // Draw the chosen maze
@@ -33598,10 +33598,10 @@ int main(void) {
       }
       if (value == 0b10) {
         *LEDR_ptr = value;
-        memcpy(chosen_maze, maze2, sizeof(chosen_maze));
+        memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
-        draw_screen(chosen_maze);  // Draw the chosen maze
+        draw_screen(chosen_maze); 
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
       }
@@ -33610,7 +33610,7 @@ int main(void) {
         memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();
         wait_for_vsync();
-        draw_screen(chosen_maze);  // Use chosen_maze here as well
+        // draw_screen(chosen_maze);
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         break;
       }
