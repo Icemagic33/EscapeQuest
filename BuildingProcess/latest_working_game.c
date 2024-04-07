@@ -33962,8 +33962,8 @@ Destination create_dynamic_destination_2() {
     valid = true;
 
     // Check if the generated position is valid
-    for (int y = 0; y < DESTINATION_SIZE + 5; y++) {
-      for (int x = 0; x < DESTINATION_SIZE + 5; x++) {
+    for (int y = -1; y < DESTINATION_SIZE + 5; y++) {
+      for (int x = -1; x < DESTINATION_SIZE + 5; x++) {
         if (maze2[dest.y - 5 + y][dest.x - 5 + x] !=
             0x0000) {     // If not black, it's a wall
           valid = false;  // Destination overlaps with a wall, so it's not valid
@@ -33988,8 +33988,8 @@ Destination create_dynamic_destination_3() {
     valid = true;
 
     // Check if the generated position is valid
-    for (int y = 0; y < DESTINATION_SIZE + 5; y++) {
-      for (int x = 0; x < DESTINATION_SIZE + 5; x++) {
+    for (int y = -1; y < DESTINATION_SIZE + 5; y++) {
+      for (int x = -1; x < DESTINATION_SIZE + 5; x++) {
         if (maze3[dest.y - 5 + y][dest.x - 5 + x] !=
             0x0000) {     // If not black, it's a wall
           valid = false;  // Destination overlaps with a wall, so it's not valid
