@@ -10,7 +10,7 @@ This is the menu screen. Use the switch on the DE1-SoC board to select maze/diff
 
 ## Maze 1
 Hand created maze. Since the maze has lots of holes, it is easier for player 1 to reach its checkpoint. 
-![maze2_revised](https://github.com/Icemagic33/EscapeQuest/assets/78094725/5a6c4a67-4067-4157-a4a9-26facba18e8c)
+![maze2_revised](https://github.com/Icemagic33/EscapeQuest/assets/78094725/c32d8e2f-5a53-43f3-868b-6ec95cc63c50)
 
 
 ## Maze 2 
@@ -24,7 +24,7 @@ This maze is mysterious. The boarders are black! You must find your way through 
 <img width="480" alt="maze3" src="https://github.com/Icemagic33/EscapeQuest/assets/78094725/545bcd1a-b0a0-4f69-a0db-a637dc0cab08">
 
 ## Player 1 Wins
-![player1win](https://github.com/Icemagic33/EscapeQuest/assets/78094725/40ee11cc-fef9-427c-8d73-8854d9b41b53) 
+![player1win](https://github.com/Icemagic33/EscapeQuest/assets/78094725/33f115e4-e325-406a-bafa-0604b7f18355)
 
 ## Player 2 Wins
 ![player2win](https://github.com/Icemagic33/EscapeQuest/assets/78094725/602c55c4-0fdc-4896-814d-5b74796ce86a)
