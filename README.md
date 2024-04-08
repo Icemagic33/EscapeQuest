@@ -63,7 +63,8 @@ Embark on a journey through the unknown in this enigmatic maze. With borders shr
 
 ### Victory Screens
 
-Celebrate your triumphs or concede defeat with our vibrant victory screens. Whether you're outmaneuvering your opponent to the checkpoint or capturing them in a strategic corner, each win is commemorated with a unique display.
+Celebrate your triumphs with vibrant victory screens and unique audio cues for each player, making every win a memorable spectacle. Whether securing the checkpoint or capturing your opponent, the game marks your success with spirited displays and celebratory sounds, enriching the competitive experience.
+
 
 #### Player 1 Wins
 A testament to speed and strategy.
