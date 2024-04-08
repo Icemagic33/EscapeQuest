@@ -50084,34 +50084,34 @@ int main(void) {
     draw_screen(menu);
     *(pixel_ctrl_ptr + 1) = (int)Buffer2;        // Set back buffer
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Draw on back buffer
-    uint16_t chosen_maze[240][320] = {0};
+    // uint16_t chosen_maze[240][320] = {0};
 
     // decide map level 1 to 3
     while (1) {
       int value = *SW_ptr;
       if (value == 0b1) {
         *LEDR_ptr = value;  // Indicate the selected maze on LEDs
-        memcpy(chosen_maze, maze2, sizeof(chosen_maze));
-        clear_screen();            // Clears the back buffer
-        draw_screen(chosen_maze);  // Draws the maze onto the back buffer
-        wait_for_vsync();          // Wait for the vertical synchronization
+        // memcpy(chosen_maze, maze2, sizeof(chosen_maze));
+        clear_screen();      // Clears the back buffer
+        draw_screen(maze2);  // Draws the maze onto the back buffer
+        wait_for_vsync();    // Wait for the vertical synchronization
         *(pixel_ctrl_ptr + 1) = pixel_buffer_start;
         pixel_buffer_start = *(pixel_ctrl_ptr);
         break;
       }
       if (value == 0b10) {
         *LEDR_ptr = value;  // Indicate the selected maze on LEDs
-        memcpy(chosen_maze, maze3, sizeof(chosen_maze));
-        clear_screen();            // Clears the back buffer
-        draw_screen(chosen_maze);  // Draws the maze onto the back buffer
-        wait_for_vsync();          // Wait for the vertical synchronization
+        // memcpy(chosen_maze, maze3, sizeof(chosen_maze));
+        clear_screen();      // Clears the back buffer
+        draw_screen(maze3);  // Draws the maze onto the back buffer
+        wait_for_vsync();    // Wait for the vertical synchronization
         *(pixel_ctrl_ptr + 1) = pixel_buffer_start;
         pixel_buffer_start = *(pixel_ctrl_ptr);
         break;
       }
       if (value == 0b100) {
         *LEDR_ptr = value;  // Indicate the selected maze on LEDs
-        memcpy(chosen_maze, maze3, sizeof(chosen_maze));
+        // memcpy(chosen_maze, maze3, sizeof(chosen_maze));
         clear_screen();  // Clears the back buffer
         // draw_screen(chosen_maze);  // Draws the maze onto the back buffer
         wait_for_vsync();  // Wait for the vertical synchronization
