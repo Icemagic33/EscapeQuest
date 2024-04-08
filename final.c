@@ -50044,14 +50044,14 @@ bool has_caught(int p1_x, int p1_y, int p2_x, int p2_y);
 Destination create_dynamic_destination_2();
 Destination create_dynamic_destination_3();
 void draw_destination(Destination dest);
+void clear_destination(Destination dest);
 bool has_reached_destination(int p1_x, int p1_y, Destination dest);
 void clear_hex_display(void);
 void audio_play_for_win(int *samples, int sample_n_1);
 int value;
 void draw_line(int x0, int y0, int x1, int y1, short int color);
 void swap(int *x, int *y);
-void draw_frame();
-void draw_entrance_exit();
+void draw_screen(const uint16_t draw[240][320]);
 void audio_play_for_lose(int *samples, int sample_n_1);
 // Digit to 7-segment encoding for common anode HEX display
 int digit_to_segment[10] = {
@@ -50084,7 +50084,7 @@ int main(void) {
     draw_screen(menu);
     *(pixel_ctrl_ptr + 1) = (int)Buffer2;        // Set back buffer
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Draw on back buffer
-    int chosen_maze[320][240] = {0};
+    uint16_t chosen_maze[240][320] = {0};
 
     // decide map level 1 to 3
     while (1) {
@@ -50334,8 +50334,8 @@ void swap(int *x, int *y) {
   *y = temp;
 }
 
-void draw_screen(int draw[320][240]) {
-  const short int(*image_colour)[320] = draw;
+void draw_screen(const uint16_t draw[240][320]) {
+  const uint16_t(*image_colour)[320] = draw;
   for (int y = 0; y < 240; y++) {
     for (int x = 0; x < 320; x++) {
       plot_pixel(x, y, image_colour[y][x]);
