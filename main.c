@@ -1,12 +1,10 @@
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>  // Include the header for memcpy function
-#include <time.h>
+#include <time.h>    // Inlcude for random destination generation
 
 #include "audio.c"
 #include "characters.c"
+#include "end_screen.c"
+#include "globals.h"
 #include "maze2.c"
 #include "maze3.c"
 #include "menu.c"
@@ -50,13 +48,10 @@ void plot_pixel(int x, int y, short int line_color);
 void wait_for_vsync();
 void check_and_correct_boundaries(int *x, int *y);
 void setup_timer();
-void delay_1sec();
-void fill_screen_with_color(short int color);
 void move_player1_2(uint8_t scan_code, int *x, int *y);
 void move_player2_2(uint8_t scan_code, int *x, int *y);
 void move_player1_3(uint8_t scan_code, int *x, int *y);
 void move_player2_3(uint8_t scan_code, int *x, int *y);
-void draw_player1(int x, int y);
 void draw_character(int top_left_x, int top_left_y, unsigned int color,
                     int num);
 void display_hex(uint32_t number);
@@ -71,11 +66,10 @@ void clear_destination(Destination dest);
 bool has_reached_destination(int p1_x, int p1_y, Destination dest);
 void clear_hex_display(void);
 void audio_play_for_win(int *samples, int sample_n_1);
-int value;
-void draw_line(int x0, int y0, int x1, int y1, short int color);
-void swap(int *x, int *y);
 void draw_screen(const uint16_t draw[240][320]);
 void audio_play_for_lose(int *samples, int sample_n_1);
+
+int value;
 // Digit to 7-segment encoding for common anode HEX display
 int digit_to_segment[10] = {
     0x3F,  // 0
@@ -327,49 +321,11 @@ int main(void) {
   return 0;
 }
 
-void draw_line(int x0, int y0, int x1, int y1, short int color) {
-  // lines should be only vertical or horizontal
-  if (x1 > x0 && y0 == y1) {
-    // which means it's horizontal line
-    for (int i = x0; i < x1; i++) {
-      if (y0 - 1 > 0) {
-        plot_pixel(i, y0 - 1, color);
-      }
-      plot_pixel(i, y0, color);
-      plot_pixel(i, y0 + 1, color);
-    }
-  }
-  if (x1 == x0 && y0 < y1) {
-    // which means it's vertical line
-    for (int i = y0; i < y1; i++) {
-      if (x0 - 1 > 0) {
-        plot_pixel(x0 - 1, i, color);
-      }
-      plot_pixel(x0, i, color);
-      plot_pixel(x0 + 1, i, color);
-    }
-  }
-}
-
-void swap(int *x, int *y) {
-  int temp = *x;
-  *x = *y;
-  *y = temp;
-}
-
 void draw_screen(const uint16_t draw[240][320]) {
   const uint16_t(*image_colour)[320] = draw;
   for (int y = 0; y < 240; y++) {
     for (int x = 0; x < 320; x++) {
       plot_pixel(x, y, image_colour[y][x]);
-    }
-  }
-}
-
-void fill_screen_with_color(short int color) {
-  for (int y = 0; y < SCREEN_HEIGHT; y++) {
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-      plot_pixel(x, y, color);  // Fill each pixel with the given color
     }
   }
 }
@@ -380,14 +336,6 @@ void setup_timer() {
   TIMER_BASE[2] = COUNTER_DELAY & 0xFFFF;  // Set period low
   TIMER_BASE[3] = COUNTER_DELAY >> 16;     // Set period high
   TIMER_BASE[1] = 0b0110;                  // Timer mode: continuous and start
-}
-
-void delay_1sec() {
-  // Reset the timer to count from 0 again for 1 second
-  TIMER_BASE[0] = 0;  // Clear TO bit to start counting from 0
-  while (!(TIMER_BASE[0] & 0b1))
-    ;                 // Wait if TO bit is not set
-  TIMER_BASE[0] = 0;  // Clear TO bit for the next interval
 }
 
 void display_red_screen() {

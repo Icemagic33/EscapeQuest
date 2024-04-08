@@ -32,7 +32,8 @@ struct Maze {
   int color;
 };
 
-extern const uint16_t maze_pacman[240][320];
 extern const uint16_t menu[240][320];
+extern const uint16_t maze2[240][320];
+extern const uint16_t maze3[240][320];
 
 #endif
